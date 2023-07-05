@@ -1,0 +1,26 @@
+{% include './base.html' %}
+
+{% block content %}
+    <h2>Hola {{ request.user.username }}</h2>
+    <table>
+        <tbody>
+            <tr>
+                <td>username:</td>
+                <td>{{request.user.username}}</td>
+            </tr>
+            <tr>
+                <td>email:</td>
+                <td>{{request.user.email}}</td>
+            </tr>
+            <tr>
+                <td>balance:</td>
+                <td>{{request.user.balance}} USDT</td>
+            </tr>
+            <tr>
+                <td>Refferal of:</td>
+                <td>{{refferal.refferal_of}}</td>
+            </tr>
+        </tbody>
+    </table>
+{% endblock content %}
+    
