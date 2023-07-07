@@ -18,10 +18,12 @@ from django.contrib import admin
 from django.urls import path,include
 from dashboard.views import index
 from deposits.views import DepositView
+from withdraw.views import WithdrawRequestView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('auth/',include('authentication.urls')),
     path('',index,name="dashboard"),
     path('deposit/',DepositView.as_view(),name="deposit"),
+    path('withdraw/',WithdrawRequestView.as_view(),name="withdraw"),
 ]
