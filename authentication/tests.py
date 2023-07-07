@@ -34,8 +34,135 @@ class UserTest(TestCase):
         with self.assertRaises(Exception):
             User.objects.create_user(email="test@test.com",username="test2",password="test")
             
-        def test_create_superuser(self):
-            pass
+    def test_create_superuser(self):
+        user = User.objects.create_superuser("test","test@test.com","test")
+        self.assertEqual(user.username,"test")
+        self.assertEqual(user.email,"test@test.com")
+        self.assertTrue(user.is_superuser)
         
+class LoginViewTest(TestCase):
+            
+    def setUp(self):
+        self.user = User.objects.create_user(username="test",email="test@test.com",password="testing1234")
+
+    def test_get(self):
+        response = self.client.get("/auth/login/")
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,"Username")
+        self.assertContains(response,"Password")
+                
+    def test_post(self):
+        data = {
+            "username": "test",
+            "password": "testing1234",
+        }
+        response = self.client.post("/auth/login/",data)
+        self.assertEqual(response.status_code,302)
+                
+        data = {
+            "username": "test",
+            "password": "testing",
+        }
+                
+        response = self.client.post("/auth/login/",data)
+        self.assertEqual(response.status_code,200)
+                
+        data = {
+            "username": "test2",
+            "password": "testing1234",
+        }
+                
+        response = self.client.post("/auth/login/",data)
+        self.assertEqual(response.status_code,200)
+
+class RegisterUserViewTest(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="testuser",email="testuser@test.com",password="testing1234")
+    
+    def test_get(self):
+        response = self.client.get("/auth/signup/")
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,"Username")
+        self.assertContains(response,"Confirm Password")
         
+    def test_post(self):
+        data = {
+            "username": "test",
+            "email": "test@test.com",
+            "password1": "testing1234",
+            "password2": "testing1234",
+        }
+        
+        response = self.client.post("/auth/signup/",data)
+        self.assertEqual(response.status_code,302)
+        user = User.objects.get(username="test")
+        self.assertFalse(user.is_superuser)
+        refferal_user = Refferal.objects.get(user=user)
+        self.assertEqual(refferal_user.user,user)
+        self.assertIsNone(refferal_user.refferal_of)
+        
+        data = {
+            "username": "testuser2",
+            "email": "testuser2@test.com",
+            "password1": "testing1234",
+            "password2": "testing1234",
+        }
+        response = self.client.post("/auth/signup/1/",data)
+        self.assertEqual(response.status_code,302)
+        user = User.objects.get(username="testuser2")
+        self.assertFalse(user.is_superuser)
+        refferal_user = Refferal.objects.get(user=user)
+        self.assertEqual(refferal_user.user,user)
+        self.assertEqual(refferal_user.refferal_of,User.objects.get(pk=1))
+        
+        data = {
+            "username": "testuser3",
+            "email": "testuser3@test.com",
+            "password1": "testing1234",
+            "password2": "testing1234",
+        }
+        response = self.client.post("/auth/signup/100/",data)
+        self.assertEqual(response.status_code,302)
+        user = User.objects.get(username="testuser3")
+        refferal_user = Refferal.objects.get(user=user)
+        
+        self.assertEqual(refferal_user.user,user)
+        self.assertIsNone(refferal_user.refferal_of)
+        
+        data = {
+            "username": "test2",
+            "email": "test2@test.com",
+            "password1": "testing123",
+            "password2": "testing1234",
+        }
+        response = self.client.post("/auth/signup/",data)
+        self.assertEqual(response.status_code,200)
+        
+        data = {
+            "username": "test2",
+            "password1": "testing1234",
+            "password2": "testing1234",
+        }
+        response = self.client.post("/auth/signup/",data)
+        self.assertEqual(response.status_code,200)
+        
+        data = {
+            "email": "test2@test.com",
+            "password1": "testing123",
+            "password2": "testing1234",
+        }
+        response = self.client.post("/auth/signup/",data)
+        self.assertEqual(response.status_code,200)
+        
+        data = {
+            "username": "testuser",
+            "email": "testuser@test.com",
+            "password1": "testing1234",
+            "password2": "testing1234",
+        }
+        response = self.client.post("/auth/signup/",data)
+        self.assertEqual(response.status_code,200)
+        
+        response = self.client.post("/auth/signup/",{})
+        self.assertEqual(response.status_code,200)
         

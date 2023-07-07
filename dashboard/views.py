@@ -1,5 +1,7 @@
 from django.shortcuts import render
+from authentication.models import Refferal
 
 # Create your views here.
 def index(request):
-    return render(request,"dashboard/index.html")
+    refferal = Refferal.objects.get(user=request.user)
+    return render(request,"dashboard/index.html",context={"refferal":refferal})

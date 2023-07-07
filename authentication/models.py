@@ -16,6 +16,7 @@ class UserManager(BaseUserManager):
         return user
     
     def create_superuser(self,username,email,password,**extra_fields):
+        extra_fields.setdefault("is_superuser",True)
         return self.create_user(username,email,password,**extra_fields)
 
 class User(AbstractBaseUser):
@@ -24,6 +25,7 @@ class User(AbstractBaseUser):
     wallet = models.TextField(null=True,blank=True)
     balance = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
+    is_superuser = models.BooleanField(default=False)
     
     REQUIRED_FIELDS = ['email']
     
@@ -33,4 +35,4 @@ class User(AbstractBaseUser):
     
 class Refferal(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, unique=True, related_name="user")
-    refferal_of = models.ForeignKey(User,on_delete=models.CASCADE, related_name="refferal_of")
+    refferal_of = models.ForeignKey(User,on_delete=models.CASCADE, related_name="refferal_of",null=True,blank=True)

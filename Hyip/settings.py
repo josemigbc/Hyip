@@ -27,8 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     '127.0.0.1',
+    'hyip.pythonanywhere.com',
 ]
-
 
 # Application definition
 
@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'authentication',
     'dashboard',
+    'deposits',
+    'withdraw',
 ]
 
 MIDDLEWARE = [
