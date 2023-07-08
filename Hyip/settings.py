@@ -59,7 +59,7 @@ AUTH_USER_MODEL = 'authentication.User'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/auth/login/'
-
+LOGIN_URL = '/auth/login/'
 ROOT_URLCONF = 'Hyip.urls'
 
 TEMPLATES = [

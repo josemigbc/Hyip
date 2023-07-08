@@ -1,5 +1,6 @@
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+from django.conf import settings
 from .models import WithdrawRequest
 
 User = get_user_model()
@@ -38,18 +39,25 @@ class WithdrawViewTest(TestCase):
     
     def test_get(self):
         response = self.client.get("/withdraw/")
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
+        
+        self.client.login(username="test",password="test")
+        response = self.client.get("/withdraw/")
         self.assertEqual(response.status_code,200)
         self.assertContains(response,"Amount")
         
     def test_post(self):
         
         response = self.client.post("/withdraw/")
-        self.assertEqual(response.status_code,200)
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
         withdraw_request = WithdrawRequest.objects.all().first()
         self.assertIsNone(withdraw_request)
         
         response = self.client.post("/withdraw/",{"amount":1000})
-        self.assertEqual(response.status_code,200)
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
         withdraw_request = WithdrawRequest.objects.all().first()
         self.assertIsNone(withdraw_request)
         
@@ -57,6 +65,7 @@ class WithdrawViewTest(TestCase):
         response = self.client.post("/withdraw/",{"amount":1000})
         withdraw_request = WithdrawRequest.objects.all().first()
         self.assertEqual(response.status_code,302)
+        self.assertEqual(response.url,"/")
         self.assertEqual(withdraw_request.user,self.user)
         self.assertEqual(withdraw_request.amount,1000)
         self.assertFalse(withdraw_request.is_approved)

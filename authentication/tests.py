@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.conf import settings
 from .models import User,Refferal
 from django.db import IntegrityError
 
@@ -58,6 +59,7 @@ class LoginViewTest(TestCase):
         }
         response = self.client.post("/auth/login/",data)
         self.assertEqual(response.status_code,302)
+        self.assertEqual(response.url,"/")
                 
         data = {
             "username": "test",
@@ -95,6 +97,7 @@ class RegisterUserViewTest(TestCase):
         
         response = self.client.post("/auth/signup/",data)
         self.assertEqual(response.status_code,302)
+        self.assertEqual(response.url,settings.LOGIN_URL)
         user = User.objects.get(username="test")
         self.assertFalse(user.is_superuser)
         refferal_user = Refferal.objects.get(user=user)
@@ -166,3 +169,45 @@ class RegisterUserViewTest(TestCase):
         response = self.client.post("/auth/signup/",{})
         self.assertEqual(response.status_code,200)
         
+class AuthenticatedViews(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="test",email="test@test.com",password="testing1234",balance=3000)
+        Refferal.objects.create(user=self.user)
+        
+    def test_dashboard_view(self):
+        
+        response = self.client.get("/")
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
+        
+        self.client.login(username="test",password="testing1234")
+        response = self.client.get("/")
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,"test")
+            
+    def deposit_withdraw_base(self,url):
+        
+        data = {"amount": 1000}
+        
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
+                
+        response = self.client.post(url,data)
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
+        
+        self.client.login(username="test",password="testing1234")
+        response = self.client.get(url)
+        self.assertEqual(response.status_code,200)
+        self.assertContains(response,"Amount")
+        
+        response = self.client.post(url,data)
+        self.assertEqual(response.status_code,302)
+        self.assertEqual("/",response.url)
+        
+    def test_deposit_view(self):
+        self.deposit_withdraw_base("/deposit/")
+    
+    def test_withdraw_view(self):
+        self.deposit_withdraw_base("/withdraw/")

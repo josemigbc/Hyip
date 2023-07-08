@@ -1,5 +1,6 @@
 from django.test import TestCase
 from .models import DepositRequest
+from django.conf import settings
 from django.contrib.auth import get_user_model
 
 User = get_user_model()
@@ -30,10 +31,15 @@ class DepositRequestTest(TestCase):
         self.assertTrue(deposit_request.is_approved)
         
 class DepositViewTest(TestCase):
-    def setUp(self) -> None:
+    def setUp(self):
         self.user = User.objects.create_user(username="test",email="test@test.com",password="test")
     
     def test_get(self):
+        response = self.client.get("/deposit/")
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
+        
+        self.client.login(username="test",password="test")
         response = self.client.get("/deposit/")
         self.assertEqual(response.status_code,200)
         self.assertContains(response,"Amount")
@@ -41,12 +47,14 @@ class DepositViewTest(TestCase):
     def test_post(self):
         
         response = self.client.post("/deposit/")
-        self.assertEqual(response.status_code,200)
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
         deposit_request = DepositRequest.objects.all().first()
         self.assertIsNone(deposit_request)
         
         response = self.client.post("/deposit/",{"amount":1000})
-        self.assertEqual(response.status_code,200)
+        self.assertEqual(response.status_code,302)
+        self.assertTrue(response.url.startswith(settings.LOGIN_URL))
         deposit_request = DepositRequest.objects.all().first()
         self.assertIsNone(deposit_request)
         
