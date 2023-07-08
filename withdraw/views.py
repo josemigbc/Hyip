@@ -1,5 +1,6 @@
 from django.shortcuts import render,redirect
 from django.views import View
+from django.core.exceptions import ValidationError
 from .forms import WithDrawRequestForm
 
 # Create your views here.
@@ -16,6 +17,9 @@ class WithdrawRequestView(View):
         }
         form =  WithDrawRequestForm(data)
         if form.is_valid():
-            form.save()
-            return redirect("/")
+            try:
+                form.save()
+                return redirect("/")
+            except ValidationError:
+                pass
         return self.get(request)

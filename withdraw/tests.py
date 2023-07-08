@@ -15,9 +15,8 @@ class WithdrawRequestTest(TestCase):
         self.assertEqual(withdraw_request.amount,1000)
         self.assertFalse(withdraw_request.is_approved)
         
-        """ Todavia no desarrollado pra cumplir con este test 
         with self.assertRaises(Exception):
-            WithdrawRequest.objects.create(user=self.user,amount=3000) """
+            WithdrawRequest.objects.create(user=self.user,amount=3000)
         
         with self.assertRaises(Exception):
             WithdrawRequest.objects.create(user=self.user)
@@ -69,7 +68,7 @@ class WithdrawViewTest(TestCase):
         self.assertEqual(withdraw_request.amount,1000)
         self.assertFalse(withdraw_request.is_approved)
         
-        #response = self.client.post("/withdraw/",{"amount": 3000})
+        response = self.client.post("/withdraw/",{"amount": 3000})
         self.assertEqual(response.status_code,200)
         withdraw_request = WithdrawRequest.objects.all().last()
         self.assertEqual(withdraw_request.user,self.user)
