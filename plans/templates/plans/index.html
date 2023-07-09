@@ -1,0 +1,20 @@
+{% include 'dashboard/base.html' %}
+
+
+{% block content %}
+    <table style="margin: 20px;">
+        <tr>
+            <td>$5-$99</td>
+            <td>$100 o mas</td>
+        </tr>
+        <tr>
+            <td>Ganancia Diaria: 1%</td>
+            <td>Ganancia Diaria: 2%</td>
+        </tr>
+    </table>
+    <form method="post">
+        {% csrf_token %}
+        <p>Amount:</p><input type="number" name="amount">
+        <button>Buy a plan</button>
+    </form>
+{% endblock content %}
