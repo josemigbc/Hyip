@@ -1,0 +1,68 @@
+{% include './base.html' %}
+
+{% block content %}
+    <h2>Mis operaciones</h2>
+    <table>
+        <tr>Depositos</tr>
+        <tr>
+            <th>Cantidad</th>
+            <th>Aprobacion</th>
+            <th>Creado</th>
+        </tr>
+    {% for deposit in deposits%}
+        <tr>
+            <td>{{deposit.amount}}</td>
+            <td>
+            {% if deposit.is_approved %}
+                Si
+            {% else %}
+                No
+            {% endif %}
+            </td>
+            <td>{{deposit.created}}</td>
+        </tr>
+    {% empty %}
+    <tr>No hay depositos</tr>
+    {% endfor %}
+    </table>
+    <table>
+        <tr>Retiros</tr>
+        <tr>
+            <th>Cantidad</th>
+            <th>Aprobacion</th>
+            <th>Creado</th>
+        </tr>
+        {% for withdraw in withdraws%}
+            <tr>
+                <td>{{withdraw.amount}}</td>
+                <td>
+                    {% if withdraw.is_approved %}
+                    Si
+                    {% else %}
+                    No
+                    {% endif %}</td>
+                <td>{{withdraw.created}}</td>
+            </tr>
+        {% empty %}
+        <tr>No hay retiros</tr>
+        {% endfor %}
+    </table>
+    <table>
+        <tr>Planes</tr>
+        <tr>
+            <th>Cantidad</th>
+            <th>% de ganancia</th>
+            <th>Creado</th>
+        </tr>
+            {% for plan in plans%}
+                <tr>
+                    <td>{{plan.amount}}</td>
+                    <td>{{plan.daily_earning}}</td>
+                    <td>{{plan.created}}</td>
+                </tr>
+            {% empty %}
+            <tr>No hay planes comprados</tr>
+            {% endfor %}
+    </table>
+
+{% endblock %}

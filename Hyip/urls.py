@@ -16,7 +16,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path,include
-from dashboard.views import index
+from dashboard.views import index,history
 from deposits.views import DepositView
 from withdraw.views import WithdrawRequestView
 from plans.views import PlanView
@@ -27,5 +27,6 @@ urlpatterns = [
     path('',index,name="dashboard"),
     path('deposit/',DepositView.as_view(),name="deposit"),
     path('withdraw/',WithdrawRequestView.as_view(),name="withdraw"),
-    path("plan/", PlanView.as_view(), name="plan")
+    path("plan/", PlanView.as_view(), name="plan"),
+    path("history/",history,name="history"),
 ]

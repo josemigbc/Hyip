@@ -1,5 +1,5 @@
 from django.db import models
-from django.contrib.auth.models import AbstractBaseUser,BaseUserManager
+from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
@@ -15,17 +15,20 @@ class UserManager(BaseUserManager):
         user.save()
         return user
     
+    
     def create_superuser(self,username,email,password,**extra_fields):
         extra_fields.setdefault("is_superuser",True)
+        extra_fields.setdefault("is_staff",True)
         return self.create_user(username,email,password,**extra_fields)
 
-class User(AbstractBaseUser):
+class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(max_length=50,unique=True)
     email = models.EmailField(_("email address"),unique=True, max_length=254)
     wallet = models.TextField(null=True,blank=True)
     balance = models.IntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
     is_superuser = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
     
     REQUIRED_FIELDS = ['email']
     
