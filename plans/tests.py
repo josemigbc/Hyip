@@ -3,6 +3,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from .models import Plan
+from authentication.models import Refferal
 import datetime
 
 User = get_user_model()
@@ -100,3 +101,13 @@ class PlanViewTest(TestCase):
         plan = Plan.objects.filter(user=self.user).last()
         self.assertEqual(plan.amount,1000)
         self.assertEqual(User.objects.get(username="test").balance,2000)
+        
+class TestRefferalSystem(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(username="test",email="test@test.com",password="test")
+        self.refferal = User.objects.create_user(username="testref",email="testref@test.com",password="test",balance=3000,refferal_of=self.user.pk)
+        
+    def test_pay_commision(self):
+        Plan.objects.create(user=self.refferal,amount=1000)
+        self.assertEqual(User.objects.get(pk=self.user.pk).balance,100)
+        self.assertEqual(User.objects.get(pk=self.refferal.pk).balance,2000)

@@ -26,9 +26,9 @@ class WithdrawRequest(models.Model):
             raise ValidationError(_("The amount and user must be given"))
         if self.amount > self.user.balance:
             raise ValidationError(_("The amount must be greater than user`s balance"))
-        
-        self.user.balance -= self.amount
-        self.user.save()
+        if not self.pk:
+            self.user.balance -= self.amount
+            self.user.save()
         
         return super(WithdrawRequest,self).save(force_insert,force_update,*args, **kwargs)
     

@@ -28,6 +28,7 @@ class DepositChangeState(ModelForm):
     def save(self, commit: bool = ...) -> Any:
         if self.cleaned_data["approved"] == "A":
             self.instance.approve()
-        self.instance.is_approved = "R"
-        self.instance.save()
+        else:
+            self.instance.is_approved = "R"
+            self.instance.save()
         return super().save(commit)

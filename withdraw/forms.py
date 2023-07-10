@@ -11,7 +11,7 @@ class WithDrawRequestForm(ModelForm):
         
 class WithDrawChangeStateForm(ModelForm):
     
-    approved = ChoiceField(choices=[('R','Rejected'),('A','Accepted')])
+    approved = ChoiceField(choices=[('A','Accepted'),('R','Rejected')])
     class Meta:
         model = WithdrawRequest
         fields = ()
@@ -25,6 +25,9 @@ class WithDrawChangeStateForm(ModelForm):
     def save(self, commit: bool = ...) -> Any:
         if self.cleaned_data["approved"] == "A":
             self.instance.approve()
-        self.instance.is_approved = "R"
-        self.instance.save()
+        else:
+            self.instance.is_approved = "R"
+            self.instance.save()
+            self.instance.user.balance += self.instance.amount
+            self.instance.user.save()
         return super().save(commit)

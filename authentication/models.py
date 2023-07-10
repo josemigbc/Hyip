@@ -1,3 +1,4 @@
+from typing import Iterable, Optional
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser,BaseUserManager,PermissionsMixin
 from django.utils.translation import gettext_lazy as _
@@ -5,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 # Create your models here.
 class UserManager(BaseUserManager):
     
-    def create_user(self,username,email,password,**extra_fields):
+    def create_user(self,username,email,password,refferal_of=None,**extra_fields):
         if not username or not email:
             raise ValueError(_("Username and Email should be set"))
         
@@ -13,6 +14,8 @@ class UserManager(BaseUserManager):
         user = self.model(email=email,username=username,**extra_fields)
         user.set_password(password)
         user.save()
+        refferal_of = User.objects.filter(pk=refferal_of).first() if refferal_of else None
+        Refferal.objects.create(user=user,refferal_of=refferal_of)
         return user
     
     

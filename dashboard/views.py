@@ -8,6 +8,9 @@ from plans.models import Plan
 # Create your views here.
 @login_required
 def index(request):
+    plans = Plan.objects.filter(user=request.user)
+    for plan in plans:
+        plan.daily_payment()
     refferal = Refferal.objects.get(user=request.user)
     return render(request,"dashboard/index.html",context={"refferal":refferal})
 
@@ -16,7 +19,6 @@ def history(request):
     deposits = DepositRequest.objects.filter(user=request.user).order_by("-created")
     withdraws = WithdrawRequest.objects.filter(user=request.user).order_by("-created")
     plans = Plan.objects.filter(user=request.user).order_by("-created")
-    print(plans.values())
     context = {
         "deposits":deposits,
         "withdraws": withdraws,

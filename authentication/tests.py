@@ -10,6 +10,7 @@ class UserTest(TestCase):
         user = User.objects.create_user("test","test@test.com","test")
         self.assertEqual(user.username,"test")
         self.assertEqual(user.email,"test@test.com")
+        self.assertIsNotNone(Refferal.objects.get(user=user))
         
         with self.assertRaises(TypeError):
             User.objects.create_user()
@@ -172,7 +173,6 @@ class RegisterUserViewTest(TestCase):
 class AuthenticatedViews(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="test",email="test@test.com",password="testing1234",balance=3000)
-        Refferal.objects.create(user=self.user)
         
     def test_dashboard_view(self):
         

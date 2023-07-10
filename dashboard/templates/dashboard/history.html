@@ -12,13 +12,7 @@
     {% for deposit in deposits%}
         <tr>
             <td>{{deposit.amount}}</td>
-            <td>
-            {% if deposit.is_approved %}
-                Si
-            {% else %}
-                No
-            {% endif %}
-            </td>
+            <td>{{ deposit.is_approved}}</td>
             <td>{{deposit.created}}</td>
         </tr>
     {% empty %}
@@ -35,12 +29,7 @@
         {% for withdraw in withdraws%}
             <tr>
                 <td>{{withdraw.amount}}</td>
-                <td>
-                    {% if withdraw.is_approved %}
-                    Si
-                    {% else %}
-                    No
-                    {% endif %}</td>
+                <td>{{ withdraw.is_approved}}</td>
                 <td>{{withdraw.created}}</td>
             </tr>
         {% empty %}

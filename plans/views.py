@@ -10,9 +10,12 @@ class PlanView(LoginRequiredMixin,View):
         return render(request,"plans/index.html")
     
     def post(self,request):
-        try:
-            Plan.objects.create(user=request.user,amount=request.POST.get("amount"))
+        data = {
+            "user": request.user,
+            "amount": request.POST.get("amount"),
+        }
+        form = PlanForm(data)
+        if form.is_valid():
+            form.save()
             return redirect("/")
-        except Exception as e:
-            print(e)
         return self.get(request)
