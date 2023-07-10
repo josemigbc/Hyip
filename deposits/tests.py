@@ -8,13 +8,13 @@ User = get_user_model()
 # Create your tests here.
 class DepositRequestTest(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(username="test",email="test@test.com",password="test")
+        self.user = User.objects.create_user(username="test",email="test@test.com",password="test",balance=2000)
     
     def test_create_deposit_request(self):
         deposit_request = DepositRequest.objects.create(user=self.user,amount=1000)
         self.assertEqual(deposit_request.user,self.user)
         self.assertEqual(deposit_request.amount,1000)
-        self.assertFalse(deposit_request.is_approved)
+        self.assertEqual(deposit_request.is_approved,"P")
         
         with self.assertRaises(Exception):
             DepositRequest.objects.create(user=self.user)
@@ -28,7 +28,8 @@ class DepositRequestTest(TestCase):
     def test_approve(self):
         deposit_request = DepositRequest.objects.create(user=self.user,amount=1000)
         deposit_request.approve()
-        self.assertTrue(deposit_request.is_approved)
+        self.assertEqual(deposit_request.is_approved,"A")
+        self.assertEqual(self.user.balance,3000)
         
 class DepositViewTest(TestCase):
     def setUp(self):
@@ -64,11 +65,11 @@ class DepositViewTest(TestCase):
         self.assertEqual(response.status_code,302)
         self.assertEqual(deposit_request.user,self.user)
         self.assertEqual(deposit_request.amount,1000)
-        self.assertFalse(deposit_request.is_approved)
+        self.assertEqual(deposit_request.is_approved,"P")
         
         response = self.client.post("/deposit/")
         self.assertEqual(response.status_code,200)
         deposit_request = DepositRequest.objects.all().last()
         self.assertEqual(deposit_request.user,self.user)
         self.assertEqual(deposit_request.amount,1000)
-        self.assertFalse(deposit_request.is_approved)
+        self.assertEqual(deposit_request.is_approved,"P")

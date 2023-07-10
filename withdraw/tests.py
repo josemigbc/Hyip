@@ -14,7 +14,8 @@ class WithdrawRequestTest(TestCase):
         withdraw_request = WithdrawRequest.objects.create(user=self.user,amount=1000)
         self.assertEqual(withdraw_request.user,self.user)
         self.assertEqual(withdraw_request.amount,1000)
-        self.assertFalse(withdraw_request.is_approved)
+        self.assertEqual(withdraw_request.is_approved,"P")
+        self.assertEqual(self.user.balance,1000)
         
         with self.assertRaises(Exception):
             WithdrawRequest.objects.create(user=self.user,amount=3000)
@@ -31,7 +32,7 @@ class WithdrawRequestTest(TestCase):
     def test_approve(self):
         withdraw_request = WithdrawRequest.objects.create(user=self.user,amount=1000)
         withdraw_request.approve()
-        self.assertTrue(withdraw_request.is_approved)
+        self.assertEqual(withdraw_request.is_approved,"A")
         
 class WithdrawViewTest(TestCase):
     def setUp(self) -> None:
@@ -68,18 +69,19 @@ class WithdrawViewTest(TestCase):
         self.assertEqual(response.url,"/")
         self.assertEqual(withdraw_request.user,self.user)
         self.assertEqual(withdraw_request.amount,1000)
-        self.assertFalse(withdraw_request.is_approved)
+        self.assertEqual(withdraw_request.is_approved,"P")
+        self.assertEqual(User.objects.get(pk=self.user.pk).balance,1000)
         
         response = self.client.post("/withdraw/")
         self.assertEqual(response.status_code,200)
         withdraw_request = WithdrawRequest.objects.all().last()
         self.assertEqual(withdraw_request.user,self.user)
         self.assertEqual(withdraw_request.amount,1000)
-        self.assertFalse(withdraw_request.is_approved)
+        self.assertEqual(withdraw_request.is_approved,"P")
         
         response = self.client.post("/withdraw/",{"amount": 3000})
         self.assertEqual(response.status_code,200)
         withdraw_request = WithdrawRequest.objects.all().last()
         self.assertEqual(withdraw_request.user,self.user)
         self.assertEqual(withdraw_request.amount,1000)
-        self.assertFalse(withdraw_request.is_approved)
+        self.assertEqual(withdraw_request.is_approved,"P")

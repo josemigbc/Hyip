@@ -12,10 +12,7 @@ class RegisterUserView(View):
     def post(self,request,pk=None):
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
-            user = User.objects.get(username=form.cleaned_data.get("username"))
-            refferal_of = User.objects.filter(pk=pk).first()
-            Refferal.objects.create(user=user,refferal_of=refferal_of)
+            form.save(refferal_of=pk)
             return redirect('/auth/login/')
         
         return render(request,"authentication/register.html")

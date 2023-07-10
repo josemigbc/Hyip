@@ -11,14 +11,14 @@ class WithdrawRequest(models.Model):
 
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     amount = models.IntegerField()
-    is_approved = models.BooleanField(default=False)
+    is_approved = models.CharField(max_length=50,choices=[('P','Processing'),('R','Rejected'),('A','Accepted')],default='P')
     created = models.DateTimeField(auto_now_add=True)
     class Meta:
         verbose_name = _("WithdrawRequest")
         verbose_name_plural = _("WithdrawRequests")
     
     def approve(self):
-        self.is_approved = True
+        self.is_approved = "A"
         self.save()
         
     def save(self,force_insert=False,force_update=False,*args,**kwargs):
@@ -26,6 +26,13 @@ class WithdrawRequest(models.Model):
             raise ValidationError(_("The amount and user must be given"))
         if self.amount > self.user.balance:
             raise ValidationError(_("The amount must be greater than user`s balance"))
+        
+        self.user.balance -= self.amount
+        self.user.save()
+        
         return super(WithdrawRequest,self).save(force_insert,force_update,*args, **kwargs)
+    
+    def __str__(self) -> str:
+        return f"{self.user}<{self.amount}>"
     
 

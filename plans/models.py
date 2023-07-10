@@ -36,3 +36,5 @@ class Plan(models.Model):
         
         return super(Plan,self).save(force_insert,force_update,*args, **kwargs)
     
+    def __str__(self) -> str:
+        return f"{self.user}<{self.amount}>"
