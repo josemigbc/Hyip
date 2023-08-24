@@ -11,7 +11,7 @@ User = get_user_model()
 class Plan(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     amount = models.IntegerField()
-    last_paid = models.DateField(auto_now_add=True)
+    last_paid = models.DateField(null=True,blank=True)
     created = models.DateTimeField(auto_now_add=True)
     
     @property
@@ -28,6 +28,8 @@ class Plan(models.Model):
     def daily_payment(self):
         now = timezone.now()
         payment_time = self.created.time()
+        if not self.last_paid:
+            self.last_paid = self.created
         spent_time = now.date() - self.last_paid
         amount = 0
         if spent_time.days < 1:
@@ -36,7 +38,9 @@ class Plan(models.Model):
             amount += self.daily_earning*self.amount*(spent_time.days - 1)
             if now.time() > payment_time:
                 amount += self.daily_earning*self.amount
+        
         self.user.balance += amount
+        self.last_paid = now.date()
         self.user.save()
         return amount
     
@@ -44,10 +48,10 @@ class Plan(models.Model):
         
         if not self.amount or not self.user:
             raise ValidationError(_("The amount and user must be given"))
-        if int(self.amount) > self.user.balance:
-            raise ValidationError(_("The amount must not be greater than user`s balance"))
-        
         if not self.pk:
+            if int(self.amount) > self.user.balance:
+                raise ValidationError(_("The amount must not be greater than user`s balance"))
+        
             self.user.balance -= int(self.amount)
             self.user.save()
             refferal = Refferal.objects.get(user=self.user)

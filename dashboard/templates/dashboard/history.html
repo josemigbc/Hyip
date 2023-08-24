@@ -1,13 +1,13 @@
 {% include './base.html' %}
 
 {% block content %}
-    <h2>Mis operaciones</h2>
-    <table>
-        <tr>Depositos</tr>
+    <h2 class="text-center my-3">Mis operaciones</h2>
+    <table class="table text-center caption-top">
+        <caption class="fs-3 text-center">Depositos</caption>
         <tr>
-            <th>Cantidad</th>
-            <th>Aprobacion</th>
-            <th>Creado</th>
+            <th>Amount</th>
+            <th>Approval</th>
+            <th>Created</th>
         </tr>
     {% for deposit in deposits%}
         <tr>
@@ -16,15 +16,17 @@
             <td>{{deposit.created}}</td>
         </tr>
     {% empty %}
-    <tr>No hay depositos</tr>
+    <tr>
+        <td colspan="3">There is no deposits</td>
+    </tr>
     {% endfor %}
     </table>
-    <table>
-        <tr>Retiros</tr>
+    <table class="table text-center caption-top">
+        <caption class="fs-3 text-center">Withdraws</caption>
         <tr>
-            <th>Cantidad</th>
-            <th>Aprobacion</th>
-            <th>Creado</th>
+            <th>Amount</th>
+            <th>Approval</th>
+            <th>Created</th>
         </tr>
         {% for withdraw in withdraws%}
             <tr>
@@ -33,15 +35,17 @@
                 <td>{{withdraw.created}}</td>
             </tr>
         {% empty %}
-        <tr>No hay retiros</tr>
+        <tr>
+            <td colspan="3">There is no withdraws</td>
+        </tr>
         {% endfor %}
     </table>
-    <table>
-        <tr>Planes</tr>
+    <table class="table text-center caption-top">
+        <caption class="fs-3 text-center">Plans</caption>
         <tr>
-            <th>Cantidad</th>
-            <th>% de ganancia</th>
-            <th>Creado</th>
+            <th>Amount</th>
+            <th>% Gain</th>
+            <th>Created</th>
         </tr>
             {% for plan in plans%}
                 <tr>
@@ -50,7 +54,9 @@
                     <td>{{plan.created}}</td>
                 </tr>
             {% empty %}
-            <tr>No hay planes comprados</tr>
+            <tr>
+                <td colspan="3">There is no plans</td>
+            </tr>
             {% endfor %}
     </table>
 

@@ -1,13 +1,23 @@
 {% extends './base.html' %}
 
 
-{% block content %}
-    <h2>Login</h2>
-    <form method="post">
-        {% csrf_token %}
-        <p>Username:<p><input type="text" name="username">
-        <p>Password:<p><input type="password" name="password">
-        <button type="submit">Log In</button>
-    </form>
-{% endblock content %}
-    
+{% block main %}
+<h2 class="text-center my-3">Login</h2>
+<div class="row justify-content-center">
+    <div class="col-sm-6">
+        <form class="px-3" method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label" for="username">Username:</label>
+                <input class="form-control" type="text" name="username" id="username">
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="password">Password:</label>
+                <input class="form-control" type="password" name="password" id="password">
+            </div>
+            <button class="btn btn-primary w-100" type="submit">Log In</button>
+        </form>
+        <a class="nav-link" href="/auth/signup/">Create an account</a>
+    </div>
+</div>
+{% endblock main %}

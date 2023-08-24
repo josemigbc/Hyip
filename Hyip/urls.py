@@ -20,6 +20,9 @@ from dashboard.views import index,history
 from deposits.views import DepositView
 from withdraw.views import WithdrawRequestView
 from plans.views import PlanView
+from django.conf.urls.static import static
+from django.conf import settings
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),

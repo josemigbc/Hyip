@@ -1,7 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views import View
 from .forms import UserRegistrationForm
-from .models import User,Refferal
 
 # Create your views here.
 class RegisterUserView(View):

@@ -1,27 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyip</title>
-</head>
-<body>
-    <header>
-        <a>Hyip</a>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/plan/">Planes</a>
-            <a href="/deposit/">Depositos</a>
-            <a href="/withdraw/">Retiros</a>
-            <a href="/history/">History</a>
-            <a href="/auth/logout/">Log out</a>
-        </nav>
-    </header>
-    <main>
-        {% block content %}
-            
-        {% endblock content %}
-    </main>
-</body>
-</html>
+{% extends 'authentication/base.html' %}
+    
+    {% block navbar %}
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/' %}active{% endif %}" aria-current="page" href="/">Home</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/plan/' %}active{% endif %}" aria-current="page" href="/plan/">Plans</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/deposit/' %}active{% endif %}" aria-current="page" href="/deposit/">Deposits</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/withdraw/' %}active{% endif %}" aria-current="page" href="/withdraw/">Withdraws</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link {% if request.path == '/history/' %}active{% endif %}" aria-current="page" href="/history/">History</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" aria-current="page" href="/auth/logout/">Log out</a>
+        </li>
+    </ul>       
+    {% endblock navbar %}
+    
+    {% block main %}
+        <main>
+            {% block content %}
+                
+            {% endblock content %}
+        </main>
+    {% endblock main %}
+        

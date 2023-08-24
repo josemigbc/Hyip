@@ -2,20 +2,26 @@
 
 
 {% block content %}
-    <h2>Obten uno de estos planes</h2>
-    <table style="margin: 20px;">
-        <tr>
-            <td>$5-$99</td>
-            <td>$100 o mas</td>
-        </tr>
-        <tr>
-            <td>Ganancia Diaria: 1%</td>
-            <td>Ganancia Diaria: 2%</td>
-        </tr>
-    </table>
-    <form method="post">
-        {% csrf_token %}
-        <p>Amount:</p><input type="number" name="amount">
-        <button>Buy a plan</button>
-    </form>
+<h2 class="text-center my-3">Get one of these plans</h2>
+<div class="row justify-content-center mb-4">
+    <div class="col text-center">
+        <div class="card m-auto mb-3" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">$5-$99</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Starter</h6>
+                <p class="card-text">Daily Gain: 1%</p>
+            </div>
+        </div>
+    </div>
+    <div class="col text-center">
+        <div class="card m-auto" style="width: 18rem;">
+            <div class="card-body">
+                <h5 class="card-title">$100 or more</h5>
+                <h6 class="card-subtitle mb-2 text-muted">Medium</h6>
+                <p class="card-text">Daily Gain: 2%</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% include './form_amount.html' with text="Buy a plan" %}
 {% endblock content %}

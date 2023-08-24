@@ -1,26 +1,26 @@
-{% include './base.html' %}
+{% extends './base.html' %}
 
 {% block content %}
-    <h2>Hola {{ request.user.username }}</h2>
-    <table>
-        <tbody>
-            <tr>
-                <td>username:</td>
-                <td>{{request.user.username}}</td>
-            </tr>
-            <tr>
-                <td>email:</td>
-                <td>{{request.user.email}}</td>
-            </tr>
-            <tr>
-                <td>balance:</td>
-                <td>{{request.user.balance}} USDT</td>
-            </tr>
-            <tr>
-                <td>Refferal of:</td>
-                <td>{{refferal.refferal_of}}</td>
-            </tr>
-        </tbody>
-    </table>
+<div class="row my-3">
+    <div class="col-md-6 px-5 mb-3">
+        <a class="btn btn-success btn-lg w-100 d-flex justify-content-between" href="/plan/">
+            <span>New Plan</span>
+            <span>+</span>
+        </a>
+    </div>
+    <div class="col-md-6 mb-3 d-flex justify-content-center">
+        <div class="card mx-3" style="width:18rem;">
+            <div class="card-body">
+                <h5 class="card-title mb-2">{{ request.user.username }}</h5>
+                <h6 class="card-subtitle mb-2 text-muted ">{{request.user.email}}</h6>
+                <h6 class="card-subtitle mb-2 text-muted "> {{request.user.balance}} USDT</h6>
+                <p class="card-text">Refferal of <strong>{{refferal.refferal_of}}</strong></p>
+            </div>
+        </div>
+    </div>
+    <div class="col">
+
+    </div>
+</div>
+
 {% endblock content %}
-    

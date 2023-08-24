@@ -1,14 +1,59 @@
 {% extends './base.html' %}
 
-{% block content %}
-    <h2>Create an account</h2>
-    <form method="post">
+{% block main %}
+    <h2 class="text-center my-3">Create an account</h2>
+    <div class="row justify-content-center">
+        <div class="col-sm-6">
+            <form class="px-3" method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label" for="username">Username:</label>
+                    <input class="form-control" type="text" name="username" id="username">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="email">Email:</label>
+                    <input class="form-control" type="email" name="email" id="email">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="wallet">Wallet:</label>
+                    <input class="form-control" type="text" name="wallet" id="wallet">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="password">Password:</label>
+                    <input class="form-control" type="password" name="password1" id="password1">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="password2">Confirm Password:</label>
+                    <input class="form-control" type="password" name="password2" id="password2">
+                </div>
+                <button class="btn btn-primary w-100" type="submit">Sign Up</button>
+            </form>
+            <a class="nav-link" href="/auth/login/">You already have an account. Log in</a>
+        </div>
+    </div>
+    <form class="px-3" method="post">
         {% csrf_token %}
-        <p>Username:<p><input type="text" name="username">
-        <p>E-mail:<p><input type="email" name="email">
-        <p>Wallet:<p><input type="text" name="wallet">
-        <p>Password:<p><input type="password" name="password1">
-        <p>Confirm Password:<p><input type="password" name="password2">
-        <button type="submit">Sign Up</button>
+        <div class="mb-3">
+            <label class="form-label" for="username">Username:</label>
+            <input class="form-control" type="text" name="username" id="username">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="email">Email:</label>
+            <input class="form-control" type="email" name="email" id="email">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="wallet">Wallet:</label>
+            <input class="form-control" type="text" name="wallet" id="wallet">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="password">Password:</label>
+            <input class="form-control" type="password" name="password1" id="password1">
+        </div>
+        <div class="mb-3">
+            <label class="form-label" for="password2">Confirm Password:</label>
+            <input class="form-control" type="password" name="password2" id="password2">
+        </div>
+        <button class="btn btn-primary w-100" type="submit">Sign Up</button>
     </form>
-{% endblock content %}
+    <a class="nav-link" href="/auth/login/">You already have an account. Log in</a>
+{% endblock main %}

@@ -2,10 +2,6 @@
 
 
 {% block content %}
-    <h2>Retiros</h2>
-    <form method="post">
-        {% csrf_token %}
-        <p>Amount:</p><input type="number" name="amount">
-        <button>Withdraw</button>
-    </form>
+    <h2 class="text-center mb-3">Withdraw</h2>
+    {% include 'plans/form_amount.html' with text="Withdraw" %}
 {% endblock content %}

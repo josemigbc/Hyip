@@ -2,11 +2,6 @@
 
 
 {% block content %}
-    <h2>Depositos</h2>
-    <form method="post">
-        {% csrf_token %}
-        <p>Amount:</p><input type="number" name="amount">
-        <button>Deposit</button>
-    </form>
+    <h2 class="text-center mb-3">Deposits</h2>
+    {% include 'plans/form_amount.html' with text="Buy a plan" %}
 {% endblock content %}
-    
