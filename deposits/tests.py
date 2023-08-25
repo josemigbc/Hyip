@@ -1,7 +1,9 @@
 from django.test import TestCase
 from .models import DepositRequest
+from .forms import DepositChangeState
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from unittest.mock import patch,Mock
 
 User = get_user_model()
 
@@ -73,3 +75,38 @@ class DepositViewTest(TestCase):
         self.assertEqual(deposit_request.user,self.user)
         self.assertEqual(deposit_request.amount,1000)
         self.assertEqual(deposit_request.is_approved,"P")
+        
+class DepositChangeStateTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls) -> None:
+        user = User.objects.create_user(username="test",email="test@test.com",password="testing1234",balance=3000)
+        cls.deposit = DepositRequest.objects.create(user=user,amount=1000)
+    
+    def test_is_valid_with_ok(self):
+        form = DepositChangeState({"approved": "R"},instance=self.deposit)
+        is_valid = form.is_valid()
+        self.assertTrue(is_valid)
+    
+    def test_is_valid_with_ok(self):
+        self.deposit.is_approved = "A"
+        form = DepositChangeState({"approved": "R"},instance=self.deposit)
+        is_valid = form.is_valid()
+        self.assertFalse(is_valid)
+    
+    @patch.object(DepositRequest,"approve")
+    def test_save_with_A(self,mock:Mock):
+        form = DepositChangeState({"approved": "A"},instance=self.deposit)
+        is_valid = form.is_valid()
+        form.save()
+        mock.assert_called_once()
+        self.assertTrue(is_valid)
+    
+    @patch.object(DepositRequest,"approve")
+    def test_save_with_R(self,mock:Mock):
+        form = DepositChangeState({"approved": "R"},instance=self.deposit)
+        is_valid = form.is_valid()
+        form.save()
+        mock.assert_not_called()
+        self.assertTrue(is_valid)
+        

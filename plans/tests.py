@@ -3,8 +3,10 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils import timezone
 from .models import Plan
+from .forms import PlanForm
 from authentication.models import Refferal
 import datetime
+from freezegun import freeze_time
 
 User = get_user_model()
 
@@ -52,6 +54,74 @@ class PlanTest(TestCase):
         
         plan.last_paid = plan.created + datetime.timedelta(days=5,hours=10)
         self.assertEqual(plan.total_earning,0.01*5*plan.amount)
+
+    @freeze_time("2023-08-24 12:00")
+    def test_daily_payment_with_no_last_paid_spent_time_one_day(self):
+        plan = Plan.objects.create(user=self.user,amount=30)
+        with freeze_time("2023-08-25 12:01"):
+            amount = plan.daily_payment()
+        self.assertEqual(amount,0.3)
+        self.assertEqual(self.user.balance,2970.3)
+    
+    @freeze_time("2023-08-24 12:00")
+    def test_daily_payment_with_no_last_paid_spent_time_gt_one(self):
+        plan = Plan.objects.create(user=self.user,amount=30)
+        with freeze_time("2023-08-27 12:01"):
+            amount = plan.daily_payment()
+        self.assertEqual(amount,0.9)
+        self.assertEqual(self.user.balance,2970.9)
+    
+    @freeze_time("2023-08-24 12:00")
+    def test_daily_payment_with_no_last_paid_spent_time_lt_one_same_day(self):
+        plan = Plan.objects.create(user=self.user,amount=30)
+        with freeze_time("2023-08-24 23:00"):
+            amount = plan.daily_payment()
+        self.assertIsNone(amount)
+        self.assertEqual(self.user.balance,2970)
+    
+    @freeze_time("2023-08-24 12:00")
+    def test_daily_payment_with_no_last_paid_spent_time_lt_one_next_date(self):
+        plan = Plan.objects.create(user=self.user,amount=30)
+        with freeze_time("2023-08-25 11:59"):
+            amount = plan.daily_payment()
+        self.assertEqual(amount,0)
+        self.assertEqual(self.user.balance,2970)
+    
+    @freeze_time("2023-08-24 12:00")
+    def test_daily_payment_with_last_paid_spent_time_one_day(self):
+        plan = Plan.objects.create(user=self.user,amount=30)
+        with freeze_time("2023-08-26 12:01"):
+            plan.last_paid = plan.created.date() + datetime.timedelta(days=1)
+            amount = plan.daily_payment()
+        self.assertEqual(amount,0.3)
+        self.assertEqual(self.user.balance,2970.3)
+    
+    @freeze_time("2023-08-24 12:00")
+    def test_daily_payment_with_last_paid_spent_time_gt_one(self):
+        plan = Plan.objects.create(user=self.user,amount=30)
+        with freeze_time("2023-08-28 12:01"):
+            plan.last_paid = plan.created.date() + datetime.timedelta(days=1)
+            amount = plan.daily_payment()
+        self.assertEqual(amount,0.9)
+        self.assertEqual(self.user.balance,2970.9)
+    
+    @freeze_time("2023-08-24 12:00")
+    def test_daily_payment_with_last_paid_spent_time_lt_one_same_day(self):
+        plan = Plan.objects.create(user=self.user,amount=30)
+        with freeze_time("2023-08-25 23:00"):
+            plan.last_paid = plan.created.date() + datetime.timedelta(days=1)
+            amount = plan.daily_payment()
+        self.assertIsNone(amount)
+        self.assertEqual(self.user.balance,2970)
+    
+    @freeze_time("2023-08-24 12:00")
+    def test_daily_payment_with_no_last_paid_spent_time_lt_one_next_date(self):
+        plan = Plan.objects.create(user=self.user,amount=30)
+        with freeze_time("2023-08-26 11:59"):
+            plan.last_paid = plan.created.date() + datetime.timedelta(days=1)
+            amount = plan.daily_payment()
+        self.assertEqual(amount,0)
+        self.assertEqual(self.user.balance,2970)
         
     def test_save(self):
         plan = Plan.objects.create(user=self.user,amount=200)
@@ -102,7 +172,7 @@ class PlanViewTest(TestCase):
         self.assertEqual(plan.amount,1000)
         self.assertEqual(User.objects.get(username="test").balance,2000)
         
-class TestRefferalSystem(TestCase):
+class RefferalSystemTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(username="test",email="test@test.com",password="test")
         self.refferal = User.objects.create_user(username="testref",email="testref@test.com",password="test",balance=3000,refferal_of=self.user.pk)
@@ -111,3 +181,30 @@ class TestRefferalSystem(TestCase):
         Plan.objects.create(user=self.refferal,amount=1000)
         self.assertEqual(User.objects.get(pk=self.user.pk).balance,100)
         self.assertEqual(User.objects.get(pk=self.refferal.pk).balance,2000)
+        
+class PlanFormTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.user = User.objects.create_user(username="test",email="test@test.com",password="testing1234",balance=3000)
+    
+    def test_is_valid_with_none(self):
+        form = PlanForm({})
+        is_valid = form.is_valid()
+        self.assertFalse(is_valid)
+    
+    def test_is_valid_with_amount_lt_balance(self):
+        form = PlanForm({"user":self.user, "amount": 2000})
+        is_valid = form.is_valid()
+        self.assertTrue(is_valid)
+    
+    def test_is_valid_with_amount_gt_balance(self):
+        form = PlanForm({"user":self.user, "amount": 4000})
+        is_valid = form.is_valid()
+        self.assertFalse(is_valid)
+    
+    def test_is_valid_with_amount_eq_balance(self):
+        form = PlanForm({"user":self.user, "amount": 3000})
+        is_valid = form.is_valid()
+        self.assertTrue(is_valid)
+    

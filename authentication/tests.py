@@ -1,6 +1,7 @@
 from django.test import TestCase
 from django.conf import settings
 from .models import User,Refferal
+from .forms import UserRegistrationForm
 from django.db import IntegrityError
 
 # Create your tests here.
@@ -211,3 +212,33 @@ class AuthenticatedViews(TestCase):
     
     def test_withdraw_view(self):
         self.deposit_withdraw_base("/withdraw/")
+        
+class RegistrationFormTest(TestCase):
+    
+    @classmethod
+    def setUpTestData(cls) -> None:
+        cls.data = {
+            "username": "test",
+            "email": "test@test.com",
+            "password1": "testing1234",
+            "password2": "testing1234"
+        }
+    
+    def test_save_with_no_refferal(self):
+        form = UserRegistrationForm(self.data)
+        is_valid = form.is_valid()
+        form.save()
+        user = User.objects.filter(username="test").last()
+        refferal = Refferal.objects.filter(user=user).last()
+        self.assertIsNotNone(user)
+        self.assertIsNotNone(refferal)
+        
+    def test_save_with_refferal(self):
+        refferal = User.objects.create_user(username="test2",email="test2@test.com",password="testing1234")
+        form = UserRegistrationForm(self.data)
+        is_valid = form.is_valid()
+        form.save(refferal_of=refferal.id)
+        user = User.objects.filter(username="test").last()
+        refferal_obj = Refferal.objects.filter(user=user,refferal_of=refferal).last()
+        self.assertIsNotNone(user)
+        self.assertIsNotNone(refferal_obj)

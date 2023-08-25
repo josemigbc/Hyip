@@ -26,19 +26,20 @@ class Plan(models.Model):
         return self.daily_earning*time.days*self.amount
     
     def daily_payment(self):
-        now = timezone.now()
         payment_time = self.created.time()
         if not self.last_paid:
-            self.last_paid = self.created
+            self.last_paid = self.created.date()
+        now = timezone.now()
         spent_time = now.date() - self.last_paid
         amount = 0
         if spent_time.days < 1:
             return None
-        if spent_time.days > 1:
+        if spent_time.days >= 1:
             amount += self.daily_earning*self.amount*(spent_time.days - 1)
             if now.time() > payment_time:
                 amount += self.daily_earning*self.amount
-        
+
+        amount = round(amount,1)
         self.user.balance += amount
         self.last_paid = now.date()
         self.user.save()

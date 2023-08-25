@@ -2,6 +2,8 @@ from django.test import TestCase
 from django.contrib.auth import get_user_model
 from django.conf import settings
 from .models import WithdrawRequest
+from .forms import WithDrawChangeStateForm
+from unittest.mock import patch,Mock
 
 User = get_user_model()
 
@@ -85,3 +87,37 @@ class WithdrawViewTest(TestCase):
         self.assertEqual(withdraw_request.user,self.user)
         self.assertEqual(withdraw_request.amount,1000)
         self.assertEqual(withdraw_request.is_approved,"P")
+        
+class WithdrawChangeStateTest(TestCase):
+
+    @classmethod
+    def setUpTestData(cls) -> None:
+        user = User.objects.create_user(username="test",email="test@test.com",password="testing1234",balance=3000)
+        cls.deposit = WithdrawRequest.objects.create(user=user,amount=1000)
+    
+    def test_is_valid_with_ok(self):
+        form = WithDrawChangeStateForm({"approved": "R"},instance=self.deposit)
+        is_valid = form.is_valid()
+        self.assertTrue(is_valid)
+    
+    def test_is_valid_with_ok(self):
+        self.deposit.is_approved = "A"
+        form = WithDrawChangeStateForm({"approved": "R"},instance=self.deposit)
+        is_valid = form.is_valid()
+        self.assertFalse(is_valid)
+    
+    @patch.object(WithdrawRequest,"approve")
+    def test_save_with_A(self,mock:Mock):
+        form = WithDrawChangeStateForm({"approved": "A"},instance=self.deposit)
+        is_valid = form.is_valid()
+        form.save()
+        mock.assert_called_once()
+        self.assertTrue(is_valid)
+    
+    @patch.object(WithdrawRequest,"approve")
+    def test_save_with_R(self,mock:Mock):
+        form = WithDrawChangeStateForm({"approved": "R"},instance=self.deposit)
+        is_valid = form.is_valid()
+        form.save()
+        mock.assert_not_called()
+        self.assertTrue(is_valid)
