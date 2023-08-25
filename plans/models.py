@@ -43,6 +43,7 @@ class Plan(models.Model):
         self.user.balance += amount
         self.last_paid = now.date()
         self.user.save()
+        self.save()
         return amount
     
     def save(self,force_insert=False,force_update=False,*args,**kwargs):
