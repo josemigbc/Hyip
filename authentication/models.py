@@ -28,7 +28,7 @@ class User(AbstractBaseUser,PermissionsMixin):
     username = models.CharField(max_length=50,unique=True)
     email = models.EmailField(_("email address"),unique=True, max_length=254)
     wallet = models.TextField(null=True,blank=True)
-    balance = models.IntegerField(default=0)
+    balance = models.IntegerField(default=100)
     created = models.DateTimeField(auto_now_add=True)
     is_superuser = models.BooleanField(default=False)
     is_staff = models.BooleanField(default=False)
